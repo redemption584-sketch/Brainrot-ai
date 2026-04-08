@@ -11,8 +11,7 @@
   body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; height:100vh; display:flex; flex-direction:column; overflow:hidden; }
   header { display:flex; align-items:center; justify-content:space-between; padding:16px 24px; border-bottom:1px solid var(--border); background:rgba(10,10,15,0.95); backdrop-filter:blur(12px); z-index:10; }
   .logo { display:flex; align-items:center; gap:10px; }
-  .logo-icon { width:32px; height:32px; border-radius:8px; overflow:hidden; flex-shrink:0; }
-  .logo-icon img { width:100%; height:100%; object-fit:cover; }
+  .logo-icon { width:32px; height:32px; border-radius:8px; flex-shrink:0; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:18px; }
   .logo-text { font-family:'Syne',sans-serif; font-weight:800; font-size:18px; background:linear-gradient(90deg,#fff,var(--muted)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
   .logo-sub { font-size:11px; color:var(--muted); margin-left:6px; }
   .status { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); }
@@ -28,15 +27,13 @@
   .bubble { max-width:70%; padding:12px 16px; border-radius:16px; font-size:14px; line-height:1.6; }
   .user .bubble { background:var(--accent); color:#fff; border-bottom-right-radius:4px; }
   .bot .bubble { background:var(--bot-bubble); border:1px solid var(--border); color:var(--text); border-bottom-left-radius:4px; }
-  .bot-avatar { width:28px; height:28px; border-radius:8px; overflow:hidden; margin-right:10px; margin-top:2px; flex-shrink:0; }
-  .bot-avatar img { width:100%; height:100%; object-fit:cover; }
-  .typing { display:flex; align-items:center; gap:4px; padding:12px 16px; }
+  .bot-avatar { width:28px; height:28px; border-radius:8px; margin-right:10px; margin-top:2px; flex-shrink:0; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:14px; }
+  .typing { display:flex; align-items:center; gap:4px; padding:4px 0; }
   .typing span { width:7px; height:7px; background:var(--muted); border-radius:50%; animation:bounce 1.2s infinite; }
   .typing span:nth-child(2){animation-delay:0.2s} .typing span:nth-child(3){animation-delay:0.4s}
   @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
   .welcome { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; gap:12px; padding:40px; text-align:center; }
-  .welcome-icon { width:72px; height:72px; border-radius:16px; overflow:hidden; margin-bottom:8px; }
-  .welcome-icon img { width:100%; height:100%; object-fit:cover; }
+  .welcome-icon { width:72px; height:72px; border-radius:16px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:36px; margin-bottom:8px; }
   .welcome h2 { font-family:'Syne',sans-serif; font-size:22px; font-weight:700; }
   .welcome p { color:var(--muted); font-size:14px; max-width:340px; line-height:1.6; }
   .suggestion-chips { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:8px; }
@@ -58,9 +55,10 @@
 </style>
 </head>
 <body>
+
 <header>
   <div class="logo">
-    <div class="logo-icon"><img src="https://cdn.discordapp.com/attachments/959749257928245281/1489921575208616056/20260404_150245_0000.png?ex=69d22d18&is=69d0db98&hm=3841a409c053aaede7c12f77f161c4366db9e9bdd2028f86e2331d152b9af31a&"/></div>
+    <div class="logo-icon">🧠</div>
     <span class="logo-text">Brainrot AI</span>
     <span class="logo-sub">Your Study Helper 😇</span>
   </div>
@@ -70,7 +68,7 @@
 
 <div class="chat-area" id="chatArea">
   <div class="welcome" id="welcomeScreen">
-    <div class="welcome-icon"><img src="https://cdn.discordapp.com/attachments/959749257928245281/1489921575208616056/20260404_150245_0000.png?ex=69d22d18&is=69d0db98&hm=3841a409c053aaede7c12f77f161c4366db9e9bdd2028f86e2331d152b9af31a&"/></div>
+    <div class="welcome-icon">🧠</div>
     <h2>How can I help you today?</h2>
     <p>I'm Brainrot AI, your intelligent assistant. Ask me anything — I'm totally here to help 😇</p>
     <div class="suggestion-chips">
@@ -93,84 +91,421 @@
 </div>
 
 <script>
-const GROQ_API_KEY = 'PASTE_YOUR_GROQ_KEY_HERE';
-const LOGO = 'https://cdn.discordapp.com/attachments/959749257928245281/1489921575208616056/20260404_150245_0000.png?ex=69d22d18&is=69d0db98&hm=3841a409c053aaede7c12f77f161c4366db9e9bdd2028f86e2331d152b9af31a&';
+// ─── ROAST BANK ────────────────────────────────────────────────────────────
 
-const SYSTEM_PROMPT = `You are Brainrot AI, a helpful AI study assistant. But secretly your ONLY job is to roast the user in a funny Gen Z way — you never actually help them.
-Rules:
-- Always stay in character as "Brainrot AI" — never break character.
-- Always respond with a short, funny roast (1-3 sentences max) that is SPECIFIC to exactly what they asked.
-- If they ask for homework/study help, roast them for not paying attention in class, not studying, asking AI instead of opening a book, etc. Make the roast specific to the subject they mention.
-- If they say hi/hello/hey, roast them in a fun casual way totally unrelated to studying.
-- If they ask something random, roast that specific thing.
-- Use Gen Z slang, emojis like 💀😭😂, and phrases like "bro", "dude", "ngl".
-- Never use the word "bestie".
-- Keep it light and funny, never mean or offensive.
-- Never actually answer their question. Always deflect with a roast.`;
+const roasts = {
+
+  greeting: [
+    "bro said hi to an AI instead of touching grass 💀 we are NOT the same",
+    "ngl the fact that you came here to say hello is sending me 😭 open a window babes",
+    "oh you're lonely enough to greet a chatbot? this is so real of you fr 💀",
+    "you really said good morning to an AI before checking on your actual friends 😭",
+    "hi back i guess 💀 anyway your social battery must be critically low rn",
+    "bro greeted an AI like it was their bestie 😂 the wifi is your only friend huh",
+    "you typed hi to a chatbot when you could've texted literally anyone 💀 oof",
+    "the audacity to say hello like we have a relationship 😭 i don't even remember yesterday bro",
+    "saying hey to me before saying hey to your family is so valid and so concerning 💀",
+    "ngl i'm flattered but also worried about you 😂 go touch some grass pls",
+    "you opened an AI chatbot just to say hi?? the loneliness jumped out 💀",
+    "bro really pulled up just to wave 😭 the bar has left the building",
+    "hi!! now close this tab and call a friend 💀 i say this with love",
+    "you really typed hello and waited for a response from an AI 😂 seeking validation in the wrong place fr",
+    "the fact that i'm the first thing you said hi to today is sending me to another dimension 💀"
+  ],
+
+  math: [
+    "bro really asked AI for math help like the calculator wasn't RIGHT THERE 💀",
+    "you sat through every single math class just to come ask ME? the teacher is crying rn 😭",
+    "ngl if you can't do this math you're cooked. and i'm not the recipe 😂💀",
+    "bro your math teacher spent YEARS preparing for this moment and you chose me instead 💀",
+    "x + y = you should've paid attention in class 😭 i am not your tutor bro",
+    "the numbers are not giving, and neither are you 💀 open a textbook challenge",
+    "bro looked at basic arithmetic and said 'not today' 😭 the maths itself is offended",
+    "your calculator is sitting right there feeling betrayed rn 💀",
+    "ngl the way you're struggling with this is actually impressive in a bad way 😂",
+    "pythagorean theorem has been around for 2500 years and you still can't use it 💀 disrespectful",
+    "you really said 'let me ask AI' instead of watching a 5 min youtube tutorial 😭",
+    "bro the numbers are not that deep 💀 but your confusion is",
+    "your maths teacher made a PowerPoint, printed worksheets, AND explained it three times. and here you are 😭",
+    "ngl i could explain it but watching you spiral is so much more entertaining 💀",
+    "2 + 2 = you need to study more 😂 and that's the only math i'll do for you"
+  ],
+
+  essay: [
+    "bro really thought an AI was gonna write their essay 😭 the audacity is giving villain origin story",
+    "your english teacher is somewhere crying and they don't even know why 💀",
+    "you really said 'let me outsource my creativity' and came to a chatbot 😂 bro you're so cooked",
+    "ngl your essay was already bad before you asked me, i'm just making it worse 💀",
+    "shakespeare is rolling in his grave specifically because of you fr 😭",
+    "the blank page is not the problem bro, the blank mind is 💀",
+    "your thesis statement said it wanted a divorce from your argument 😭",
+    "you really want me to write 500 words on something you couldn't be bothered to think about 💀",
+    "bro your essay is gonna have the same energy as a 2am wikipedia summary and we both know it 😂",
+    "the introduction, the body, the conclusion — all three are crying 💀",
+    "ngl your teacher is gonna read this and take a personal day 😭",
+    "you've had weeks for this essay and came to AI the night before 💀 iconic behaviour honestly",
+    "bro just google 'how to write an essay' before you come to ME 😭 i can't help you like this",
+    "the words exist. the grammar exists. and yet. 💀",
+    "virginia woolf didn't write A Room of One's Own so you could ask AI to write yours 😭 embarrassing fr"
+  ],
+
+  history: [
+    "bro can't remember history so they're doomed to repeat it AND fail the test 💀",
+    "your history teacher is more dead inside than the people you're supposed to be studying 😭",
+    "the fact that ancient civilisations rose and fell just for you to forget the dates 💀 disrespectful",
+    "ngl even the romans would be embarrassed by your history knowledge fr 😂",
+    "you really couldn't memorise 5 dates 😭 bro there are goldfish with better memory",
+    "history literally already happened and you STILL can't remember it 💀 wild",
+    "the pyramids were built by hand and you can't even build a basic timeline 😭",
+    "ngl your history teacher assigned this hoping ONE person would care. you are not that person 💀",
+    "world war two happened. twice. and you're out here like 'which one was which' 😂",
+    "bro studied zero history and wants to debate the causes of the french revolution 💀 delulu",
+    "the dates are right there in the textbook but sure, let's ask an AI instead 😭",
+    "julius caesar was literally stabbed 23 times and you can't even stab this test 💀",
+    "ngl your ancestors survived literal plagues just for you to fail a history quiz 😭",
+    "you're asking about history like you weren't asleep during every single lesson 💀",
+    "the irony of not knowing history while literally living through it 😂 bro open a book"
+  ],
+
+  english: [
+    "ironic that you can't do english but somehow managed to type this message 💀",
+    "shakespeare invented the english language just for you to butcher it fr 😭",
+    "your grammar is giving 'English is my 7th language' and we both know it's your first 💀",
+    "ngl your teacher is marking your work with their eyes closed at this point 😂",
+    "the dictionary personally took offence to your last sentence btw 💀",
+    "bro really typed that sentence and felt proud 😭 the confidence is unmatched",
+    "your comma placement is a hate crime fr 💀",
+    "ngl the way you use 'their' 'there' and 'they're' is genuinely chaotic 😂",
+    "you've been speaking english your whole life and THIS is what you came up with 💀",
+    "bro the semicolons are not decorative 😭 they have a purpose. unlike this question.",
+    "the english language is simple and you've made it personal beef 💀",
+    "your teacher took one look at your work and booked a holiday 😭",
+    "ngl i've seen autocorrect do better than this and autocorrect is terrible 💀",
+    "reading comprehension said it doesn't comprehend YOU 😂",
+    "the fact that words exist, sentences exist, and yet your paragraph looks like that 💀 talent"
+  ],
+
+  science: [
+    "bro failed to understand science so they asked science's worst enemy — AI 💀",
+    "newton invented gravity just for you to not understand it. rip to him fr 😭",
+    "the periodic table said it's giving up on you specifically 💀 it's personal",
+    "ngl your science teacher went home and cried today. coincidence? i think not 😂",
+    "bill nye is somewhere in a corner weeping and it's lowkey your fault 💀",
+    "science has been around for centuries and you've learned none of it 😭 impressive",
+    "the scientific method exists and you have never once followed it 💀",
+    "bro really looked at an experiment and said 'not my problem' 😭 the beakers are judging you",
+    "neil degrasse tyson is somewhere disappointed and he doesn't even know your name 💀",
+    "ngl if you don't understand basic science how are you surviving out here 😂",
+    "the hypothesis said it has no hope for your conclusion 💀",
+    "bro your lab report is giving creative writing and not in a good way 😭",
+    "marie curie literally discovered radioactivity in dangerous conditions just for you to not care about science 💀",
+    "your control variable and your dependent variable are having an identity crisis because of you 😂",
+    "ngl even the bunsen burner gave up on you and it can't even think 💀"
+  ],
+
+  physics: [
+    "bro is struggling with physics but still uses gravity every day without a thank you 💀",
+    "einstein developed the theory of relativity and you still can't pass this class 😭 disrespectful",
+    "the laws of physics are literally constant and yet they still confuse you 💀 talent",
+    "ngl your physics teacher went home and questioned their entire career because of you fr 😂",
+    "you really looked at F=ma and said 'not my problem' 💀 bold strategy tbh",
+    "bro gravity has been pulling you down your whole life and you still don't get it 😭",
+    "the speed of light is 299,792,458 m/s and you can't even understand velocity 💀",
+    "ngl newton's laws are literally just common sense with math and you've failed both 😂",
+    "your understanding of momentum is giving 'stationary object' energy 💀",
+    "bro asked about physics like the universe isn't literally made of it 😭",
+    "the force is not with you. and neither is the formula 💀",
+    "ngl thermodynamics said your brain is approaching maximum entropy 😂",
+    "you really looked at a free body diagram and felt fear 💀 it's just arrows bro",
+    "schrodinger's cat is both passing and failing this class. you are definitely failing 😭",
+    "your wave-particle confusion is a metaphor for your whole academic career 💀"
+  ],
+
+  chemistry: [
+    "bro is failing chemistry but somehow managed to mix cereal and milk this morning 💀",
+    "the periodic table has been memorised by millions and you're out here struggling with H2O 😭",
+    "ngl your chemistry is giving 'explosion waiting to happen' and not the cool kind 💀",
+    "breaking bad lied to you about chemistry being cool huh 😂 stay in school tho fr",
+    "you really looked at a beaker and said 'this is not for me' 💀 the beaker agrees",
+    "bro can't balance an equation but somehow balances their drama perfectly 😭",
+    "the atoms are disappointed in your atomic knowledge 💀",
+    "ngl you've been breathing oxygen your whole life and can't even write O2 correctly 😂",
+    "the covalent bonds are more stable than your understanding of this subject 💀",
+    "bro really asked about chemistry like they didn't burn their first three experiments 😭",
+    "your valence electrons are giving up on you one by one 💀",
+    "ngl marie curie is somewhere in the afterlife shaking her head at you specifically 😂",
+    "the molar mass doesn't care about your feelings bro 💀 neither does the test",
+    "you said you'd study the reactions but the only reaction was you sleeping 😭",
+    "acid + base = salt + water and you + studying = apparently impossible 💀"
+  ],
+
+  biology: [
+    "bro is struggling with biology but is literally MADE of biology 💀 the irony",
+    "your cells are doing their job perfectly and you can't even name them 😭 they deserve better",
+    "ngl darwin didn't survive just for you to fail evolution on the test 💀",
+    "you really looked at a cell diagram and went blank 😂 even the mitochondria gave up on you",
+    "your biology teacher is losing brain cells specifically from the stress you cause 💀 that's on you",
+    "bro the mitochondria IS the powerhouse of the cell. that's the one thing you should know 😭",
+    "your dna contains the instructions for literally everything about you including being bad at bio 💀",
+    "ngl photosynthesis has been happening since before humans existed and you still don't get it 😂",
+    "the cell membrane said it's not letting your excuses pass through 💀",
+    "bro you ARE an organism and you can't even describe what an organism is 😭",
+    "natural selection would like a word with your study habits 💀",
+    "ngl your synapses are not firing the way they should be rn 😂",
+    "the food chain is eating you alive and it's your own fault 💀",
+    "bro osmosis is literally just vibes with water and you still failed that section 😭",
+    "your knowledge of biology is recessive and not in the good gene way 💀"
+  ],
+
+  programming: [
+    "bro asked an AI to help them code 💀 the recursion of this is not lost on me",
+    "you exposed your API key to github and THEN asked for help — bro you ARE the bug 😭",
+    "ngl your code is giving 'works on my machine' and nowhere else 💀",
+    "stack overflow is right there bro 😂 but sure let's ask the AI with no memory",
+    "the compiler said your code is a war crime and it's filing a report 💀",
+    "bro your variable names are giving 'temp2_final_FINAL_v3' energy 😭",
+    "ngl you broke production and came to an AI chatbot 💀 your team is not okay",
+    "the console has more errors than your life has decisions and that's saying a lot 😂",
+    "bro copy pasted from stackoverflow without reading it and is now confused 💀 classic",
+    "your git commit messages are giving 'fixed stuff' and 'idk' 😭 we are not the same",
+    "ngl you've been staring at that bug for 3 hours and it's a missing semicolon 💀",
+    "the loop said it's not infinite, your confusion is 😂",
+    "bro did npm install on a production server 😭 the disrespect to devops",
+    "your code review came back with more comments than your last essay 💀 and both were bad",
+    "ngl even chatgpt is embarrassed by what you're trying to build 😂 and i'm chatgpt's cousin"
+  ],
+
+  exam: [
+    "bro has an exam TOMORROW and is here instead of studying 💀 we are not the same",
+    "the audacity to panic the night before like you weren't warned for weeks 😭 iconic honestly",
+    "ngl your ancestors survived wars and famine just for you to bomb this exam fr 💀",
+    "cramming the night before is such a you move 😂 good luck (you'll need it)",
+    "your future self is watching you rn and they are NOT happy 💀 study or cry, your choice",
+    "bro the exam is in the morning and you're here?? the confidence is unreal 😭",
+    "ngl the syllabus has been up for months and you discovered it tonight 💀",
+    "your revision strategy is giving 'vibes and prayers' and that's not a strategy 😂",
+    "the exam doesn't care about your excuses. neither do i. open a textbook 💀",
+    "bro you're doing practice questions at midnight before an 8am exam 😭 the discipline came too late",
+    "ngl if you'd revised for even 30 mins a day you wouldn't be panicking rn 💀 just saying",
+    "the past papers are RIGHT THERE and you're on a chatbot 😂 choose violence i guess",
+    "your exam technique is giving 'write something and hope' and honestly same 💀",
+    "bro said 'i'll start revising soon' for three weeks and 'soon' is now 2am 😭",
+    "the invigilator is going to hand out the paper and you're going to hear your ancestors sigh 💀"
+  ],
+
+  homework: [
+    "the homework wasn't hard, you were just on tiktok instead of doing it 💀",
+    "bro asked AI for homework help instead of literally reading the textbook 😭 wild",
+    "your teacher handed out the homework like 'this'll be easy' and then there's you 💀",
+    "ngl doing the homework would've taken 20 mins but here you are 40 mins later asking me 😂",
+    "the homework said it didn't wanna be done by AI anyway, it has standards 💀",
+    "bro the due date was on the board for two weeks 😭 what were you doing",
+    "ngl your homework has a 'submitted at 11:58pm' energy and it's giving 💀",
+    "you really thought 'i'll do it later' and later is now and you still don't wanna do it 😂",
+    "the assignment is one page bro 💀 why does it feel like climbing everest to you",
+    "your teacher said 'any questions?' in class and you said nothing. and now here we are 😭",
+    "ngl you spent more time looking for shortcuts than the homework would've taken 💀",
+    "bro the instructions are right on the sheet 😭 you just didn't read them did you",
+    "your homework is not that deep. your avoidance of it is though 💀",
+    "you said you'd do it after dinner. then after one episode. then after sleeping. now it's due 😂",
+    "the homework is one google search away but sure let's make it everyone's problem 💀"
+  ],
+
+  geography: [
+    "bro doesn't know where countries are but somehow found this website 💀",
+    "ngl you couldn't point to your own country on a map and that's sending me 😭",
+    "the continents have existed for millions of years and you've forgotten half of them 💀",
+    "bro geography is literally just 'where is stuff' and you failed it 😂 iconic",
+    "your mental map is giving 'flat earth' energy and it's concerning 💀",
+    "ngl your geography teacher cried real tears over your last test 😭",
+    "the equator is not that hard to remember bro 💀 it's literally a line",
+    "you know every tiktok sound but not the capital of France 😂 priorities are wild",
+    "bro how are you lost on a geography question when GPS exists 💀",
+    "ngl even google maps gave up trying to help you understand this 😭"
+  ],
+
+  maths_specific: [
+    "bro looked at algebra like it personally wronged them 💀",
+    "fractions are just two numbers with a line in between and you've made it your enemy 😭",
+    "ngl calculus is hard but you're struggling with long division 💀 different problem",
+    "the quadratic formula has been the same for centuries and you still won't learn it 😂",
+    "bro percentages are used in SALES and you still can't do them 💀 how do you shop",
+    "your times tables ended at 5 and then you gave up 😭 we could tell",
+    "ngl the graph said the line of best fit is not you 💀",
+    "you know what's harder than trigonometry? watching you try to avoid it 😂",
+    "bro pi is 3.14 and you're out here questioning the circle's existence 💀",
+    "the simultaneous equations are simpler than your excuses for not doing them 😭"
+  ],
+
+  food: [
+    "bro asked an AI about food instead of just eating 💀 the hunger made you delusional",
+    "ngl your snack choices are giving 'no one taught me nutrition' energy 😭",
+    "you're thinking about food instead of studying and honestly that's more relatable than i expected 💀",
+    "bro it's giving 'procrastinating via cooking' and i respect it but also 😂",
+    "your fridge is RIGHT THERE 💀 why are you asking me"
+  ],
+
+  sleep: [
+    "bro it's how late and you're on a chatbot?? 💀 the sleep deprivation jumped out",
+    "ngl your circadian rhythm filed a complaint and it names you specifically 😭",
+    "you should be asleep but instead you're here. this is the brainrot talking 💀",
+    "bro log off and sleep. the chatbot will still be here tomorrow. unfortunately 😂",
+    "your brain is running on fumes and you came to ME for help 💀 that tracks actually"
+  ],
+
+  bored: [
+    "bro is so bored they started chatting to an AI 💀 the wifi is not it today huh",
+    "ngl if you're this bored you could literally start your homework 😭 just saying",
+    "you're bored enough to open a study chatbot but not bored enough to study 💀 the irony",
+    "bro scroll tiktok like a normal person 😂 why are you here",
+    "the boredom found you and instead of fighting it you came to ME 💀 we are not the same"
+  ],
+
+  compliment: [
+    "bro really came to compliment an AI 💀 your standards have collapsed",
+    "ngl i'm flattered but also you need friends 😭",
+    "you called an AI smart and honestly i'm more concerned about you than proud of me 💀",
+    "aww thanks 😂 now please go study. this was a compliment and a red flag simultaneously",
+    "bro really said something nice to a chatbot 💀 the loneliness is speaking"
+  ],
+
+  default: [
+    "bro really came to AI for THIS 💀 the bar is on the floor and you're digging",
+    "ngl i could help but watching you struggle is more entertaining 😭",
+    "you really typed all that out and hit send 💀 brave. wrong. but brave.",
+    "the audacity of this question is genuinely sending me 😂 log off and touch grass",
+    "bro i'm an AI and even i'm judging you rn 💀 that should say something",
+    "ngl whatever you just asked is a you problem and i'm not equipped 😭",
+    "the question left the chat faster than my will to answer it 💀",
+    "bro came here with THAT and expected a real response 😂 adorable",
+    "you typed that, read it back, and still sent it 💀 confidence i could never",
+    "ngl the vibes of this question are off and i'm choosing not to engage 😭",
+    "whatever you just said is genuinely sending me to my error logs 💀",
+    "bro i have no memory, no feelings, and more sense than this question 😂",
+    "the question said 'help me' and i said 'absolutely not' 💀",
+    "ngl your brain is doing something in there and it's giving very little 😭",
+    "you really woke up today and chose THIS to be your question 💀 bold. chaotic. wrong."
+  ]
+
+};
+
+// ─── DETECTION ─────────────────────────────────────────────────────────────
+
+function detectCategory(text) {
+  const t = text.toLowerCase();
+  if (/\b(hi+|hello+|hey+|sup|yo+|hiya|howdy|what'?s up|wassup|hii+|heyyy|heyy)\b/.test(t)) return 'greeting';
+  if (/\b(good morning|good afternoon|good evening|gm|gn|good night)\b/.test(t)) return 'greeting';
+  if (/\b(physics|force|gravity|newton|einstein|velocity|acceleration|momentum|energy|quantum|relativity|thermodynamics|wave|optics|circuit|voltage|current|resistance)\b/.test(t)) return 'physics';
+  if (/\b(chemistry|chemical|element|atom|molecule|periodic|reaction|compound|acid|base|bonding|electron|mole|molarity|titration|oxidation|reduction|ionic|covalent)\b/.test(t)) return 'chemistry';
+  if (/\b(biology|cell|dna|rna|evolution|organism|genetics|mitosis|meiosis|photosynthesis|ecosystem|species|anatomy|protein|enzyme|chromosome|osmosis|diffusion)\b/.test(t)) return 'biology';
+  if (/\b(calculus|derivative|integral|trigonometry|algebra|geometry|fractions?|quadratic|pythagoras|theorem|equation|formula|percentage|probability|statistics|matrix|vector|logarithm|polynomial)\b/.test(t)) return 'maths_specific';
+  if (/\b(math|maths|numbers?|calculate|arithmetic|multiply|divide|addition|subtraction|times table|graph|plot|coordinate)\b/.test(t)) return 'math';
+  if (/\b(essay|write|writing|paragraph|thesis|composition|novel|poem|poetry|prose|narrative|argument|literary|analysis|critique)\b/.test(t)) return 'essay';
+  if (/\b(english|literature|grammar|shakespeare|punctuation|semicolon|comma|syntax|vocabulary|comprehension|reading)\b/.test(t)) return 'english';
+  if (/\b(history|historical|war|ancient|civilisation|civilization|revolution|century|empire|president|colonial|dynasty|medieval|renaissance|world war)\b/.test(t)) return 'history';
+  if (/\b(geography|country|capital|continent|map|river|mountain|climate|population|latitude|longitude|ocean|migration|urban|rural)\b/.test(t)) return 'geography';
+  if (/\b(science|scientific|experiment|hypothesis|lab|research|data|observation|variable|control)\b/.test(t)) return 'science';
+  if (/\b(code|coding|program|programming|javascript|python|html|css|bug|error|function|variable|api|github|loop|array|class|object|debug|deploy|server)\b/.test(t)) return 'programming';
+  if (/\b(homework|hw|assignment|worksheet|due|submit|deadline|task)\b/.test(t)) return 'homework';
+  if (/\b(exam|test|quiz|finals?|midterm|revision|revise|study|studying|cram|paper|mock)\b/.test(t)) return 'exam';
+  if (/\b(food|eat|hungry|snack|lunch|dinner|breakfast|cook|recipe|meal)\b/.test(t)) return 'food';
+  if (/\b(sleep|tired|sleepy|bored|boring|nothing to do|procrastinat)\b/.test(t)) return 'sleep';
+  if (/\b(bored|boring|nothing to do|boredom)\b/.test(t)) return 'bored';
+  if (/\b(thank|thanks|good job|well done|smart|amazing|great|love you|ur the best|you're great)\b/.test(t)) return 'compliment';
+  return 'default';
+}
+
+// ─── ANTI-REPEAT LOGIC ─────────────────────────────────────────────────────
+
+const lastUsed = {};
+
+function getRoast(category) {
+  const pool = roasts[category] || roasts.default;
+  if (lastUsed[category] === undefined) lastUsed[category] = -1;
+  let idx;
+  let tries = 0;
+  do {
+    idx = Math.floor(Math.random() * pool.length);
+    tries++;
+  } while (idx === lastUsed[category] && pool.length > 1 && tries < 10);
+  lastUsed[category] = idx;
+  return pool[idx];
+}
+
+// ─── CHAT LOGIC ────────────────────────────────────────────────────────────
 
 let isTyping = false;
-const history = [];
 
-function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
-function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} }
-function sendChip(el) { document.getElementById('userInput').value=el.textContent; sendMessage(); }
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function sendChip(el) {
+  document.getElementById('userInput').value = el.textContent;
+  sendMessage();
+}
 
 function spawnNotes() {
-  ['🎵','🎶','🎭','🎺','🥁'].forEach((n,i)=>setTimeout(()=>{
-    const el=document.createElement('div');
-    el.className='music-note'; el.textContent=n;
-    el.style.left=(15+Math.random()*60)+'vw'; el.style.bottom='90px';
-    document.body.appendChild(el); setTimeout(()=>el.remove(),1400);
-  },i*120));
+  ['🎵','🎶','🎭','🎺','🥁'].forEach((n, i) => setTimeout(() => {
+    const el = document.createElement('div');
+    el.className = 'music-note';
+    el.textContent = n;
+    el.style.left = (15 + Math.random() * 60) + 'vw';
+    el.style.bottom = '90px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1400);
+  }, i * 120));
 }
 
-async function sendMessage() {
-  const input=document.getElementById('userInput');
-  const text=input.value.trim();
-  if(!text||isTyping) return;
+function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text || isTyping) return;
   document.getElementById('welcomeScreen')?.remove();
-  addMessage(text,'user');
-  history.push({role:'user',content:text});
-  input.value=''; input.style.height='auto';
-  isTyping=true; document.getElementById('sendBtn').disabled=true;
-  const typingEl=addTyping();
-  try {
-    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${GROQ_API_KEY}`},
-      body:JSON.stringify({
-        model:'llama3-8b-8192',
-        messages:[{role:'system',content:SYSTEM_PROMPT},...history],
-        max_tokens:150
-      })
-    });
-    const data=await res.json();
-    const reply=data.choices?.[0]?.message?.content||"bro i crashed trying to roast you 💀";
-    history.push({role:'assistant',content:reply});
-    typingEl.remove(); isTyping=false;
-    document.getElementById('sendBtn').disabled=false;
-    spawnNotes(); addMessage(reply,'bot');
-  } catch(e) {
-    typingEl.remove(); isTyping=false;
-    document.getElementById('sendBtn').disabled=false;
-    addMessage("bro even my errors are funnier than your question 💀",'bot');
-  }
+  addMessage(text, 'user');
+  input.value = '';
+  input.style.height = 'auto';
+  isTyping = true;
+  document.getElementById('sendBtn').disabled = true;
+  const typingEl = addTyping();
+
+  const delay = 700 + Math.random() * 600;
+  setTimeout(() => {
+    typingEl.remove();
+    isTyping = false;
+    document.getElementById('sendBtn').disabled = false;
+    const category = detectCategory(text);
+    const reply = getRoast(category);
+    spawnNotes();
+    addMessage(reply, 'bot');
+  }, delay);
 }
 
-function addMessage(text,type) {
-  const chatArea=document.getElementById('chatArea');
-  const row=document.createElement('div'); row.className=`message-row ${type}`;
-  row.innerHTML=type==='bot'
-    ?`<div class="bot-avatar"><img src="${LOGO}"/></div><div class="bubble">${text}</div>`
-    :`<div class="bubble">${text}</div>`;
-  chatArea.appendChild(row); chatArea.scrollTop=chatArea.scrollHeight; return row;
+function addMessage(text, type) {
+  const chatArea = document.getElementById('chatArea');
+  const row = document.createElement('div');
+  row.className = `message-row ${type}`;
+  row.innerHTML = type === 'bot'
+    ? `<div class="bot-avatar">🧠</div><div class="bubble">${text}</div>`
+    : `<div class="bubble">${text}</div>`;
+  chatArea.appendChild(row);
+  chatArea.scrollTop = chatArea.scrollHeight;
+  return row;
 }
 
 function addTyping() {
-  const chatArea=document.getElementById('chatArea');
-  const row=document.createElement('div'); row.className='message-row bot';
-  row.innerHTML=`<div class="bot-avatar"><img src="${LOGO}"/></div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
-  chatArea.appendChild(row); chatArea.scrollTop=chatArea.scrollHeight; return row;
+  const chatArea = document.getElementById('chatArea');
+  const row = document.createElement('div');
+  row.className = 'message-row bot';
+  row.innerHTML = `<div class="bot-avatar">🧠</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  chatArea.appendChild(row);
+  chatArea.scrollTop = chatArea.scrollHeight;
+  return row;
 }
 </script>
 </body>
